@@ -1,7 +1,7 @@
 from room import Room
 from player import Player
 from world import World
-
+from util import Stack, Queue
 import random
 from ast import literal_eval
 
@@ -13,9 +13,9 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
-
+# map_file = "maps/test_loop_fork.txt"
+map_file = "maps/main_maze.txt"
+# map_file = "maps/custom.txt"
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
 world.load_graph(room_graph)
@@ -28,6 +28,49 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
+
+
+
+
+def the_world(world, traversal_path):
+    q = Queue()
+    visited = set()
+    q.enqueue([player.current_room.id])
+    while q.size() > 0:
+        path = q.dequeue()
+        last_room = path[-1]
+        if last_room not in visited:
+            visited.add[last_room]
+        for neighbor in graph[last_room]:
+            if graph[last_room][exit] == '?':
+                return path
+            else:
+                path_copy = list(path)
+                path_copy = append[last_room][neighbor]
+                q.enqueue = (path_copy)
+    return True
+
+
+
+def the_moves(world, m_moves):
+    current_end = graph[player.current_room.id]
+    tried = []
+    for direction in current_end:
+        if current_end[direction] == '?':
+            tried.append(direction)
+        if len(tried) == 0:
+            non_explore = explore(player, m_moves)
+            room_number = player.current_room.id
+            for v in graph[room_number]:
+                if graph[room_number][v] == next:
+                    m_moves.enqueue(v)
+                    room_number = next
+    else:
+        m_move.enqueue(tried.exit[random.randint(0)])
+        len(tired_end [- 1])
+
+
+# compass = {'n,e,w,s'}
 
 
 
