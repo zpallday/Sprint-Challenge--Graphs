@@ -1,10 +1,22 @@
 from room import Room
 from player import Player
 from world import World
-from util import Stack, Queue
 import random
 from ast import literal_eval
+class Queue:
+    def __init__(self):
+        self.queue = []
 
+    def enqueue(self, value):
+        self.queue.append(value)
+
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+    def size(self):
+        return len(self.queue)
 # Load world
 world = World()
 
@@ -32,46 +44,106 @@ traversal_path = []
 
 
 
-def the_world(world, traversal_path):
+
+def the_world(player, traversal_path):
+    # init queue
     q = Queue()
+    # init set for visited rooms
     visited = set()
+    # add current room to queue
     q.enqueue([player.current_room.id])
+    # if queue is bigger than 0 there are things to explore
     while q.size() > 0:
         path = q.dequeue()
+        # keep track of last room visited
         last_room = path[-1]
         if last_room not in visited:
-            visited.add[last_room]
-        for neighbor in graph[last_room]:
-            if graph[last_room][exit] == '?':
-                return path
-            else:
-                path_copy = list(path)
-                path_copy = append[last_room][neighbor]
-                q.enqueue = (path_copy)
-    return True
+            # add to list of visited
+            visited.add(last_room)
+            #  finding an exit in the room that's unexplored
+            for exit in graph[last_room]:
+                 # if exot has been explored
+                if graph[last_room][exit] == "?":
+                    return path
+                    # removing path as already explored
+                else:
+                    path_copy = list(path)
+                    path_copy.append(graph[last_room][exit])
+                    q.enqueue(path_copy)
+    return []
 
 
 
-def the_moves(world, m_moves):
+
+
+def the_moves(player, m_moves):
+    # end with current room
     current_end = graph[player.current_room.id]
-    tried = []
+    untried_end = []
+
     for direction in current_end:
-        if current_end[direction] == '?':
-            tried.append(direction)
-        if len(tried) == 0:
-            non_explore = explore(player, m_moves)
-            room_number = player.current_room.id
-            for v in graph[room_number]:
-                if graph[room_number][v] == next:
-                    m_moves.enqueue(v)
+         # if explored
+        if current_end[direction] == "?":
+            untried_end.append(direction)
+    if len(untried_end) == 0:
+        unexplored = the_world(player, m_moves)
+        # room number in player current room
+        room_number = player.current_room.id
+        for next in unexplored:
+            # 
+            for direction in graph[room_number]:
+                if graph[room_number][direction] == next:
+                    m_moves.enqueue(direction)
                     room_number = next
+                    break
     else:
-        m_move.enqueue(tried.exit[random.randint(0)])
-        len(tired_end [- 1])
+        m_moves.enqueue(untried_end[random.randint(0, len(untried_end) - 1)])
+#  how many chances
 
 
-# compass = {'n,e,w,s'}
 
+chances = 1
+# best path
+optimum_len = 500
+optimum_path = []
+# loop for how many times
+for x in range(chances):
+    player = Player(world.starting_room)
+    graph = {}
+    another_room = {}
+    # dir in the curr room exit
+    for direction in player.current_room.get_exits():
+        # if explored
+        another_room[direction] = "?"
+    graph[world.starting_room.id] = another_room
+    m_moves = Queue()
+    total_moves = []
+    the_moves(player, m_moves)
+
+    compass = {"n": "s", "s": "n", "e": "w", "w": "e"}
+
+    while m_moves.size() > 0:
+        # starting is player curr room with id
+        starting = player.current_room.id
+        # dequeue next move
+        next = m_moves.dequeue()
+        player.travel(next)
+
+        total_moves.append(next)
+        end = player.current_room.id
+        graph[starting][next] = end
+        if end not in graph:
+            graph[end] = {}
+            for exit in player.current_room.get_exits():
+                graph[end][exit] = "?"
+        graph[end][compass[next]] = starting
+        if m_moves.size() == 0:
+            the_moves(player, m_moves)
+        if len(total_moves) < optimum_len:
+            optimum_path = total_moves
+            optimum_len = len(total_moves)
+
+traversal_path = optimum_path
 
 
 # TRAVERSAL TEST
@@ -94,12 +166,12 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
